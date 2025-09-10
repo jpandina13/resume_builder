@@ -2,13 +2,12 @@ import os
 import re
 import argparse
 import json
-import requests
+import requests # For making API calls
+from dotenv import load_dotenv
 
-# --- Configuration ---
-# In a real application, use environment variables for the API key.
-# When run in the target environment, the key will be provided automatically.
-API_KEY = "" 
-API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key={API_KEY}"
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+API_URL = os.getenv("API_URL")
 
 def parse_obsidian_vault(master_note_path):
     """
