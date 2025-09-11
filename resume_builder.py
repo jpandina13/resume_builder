@@ -27,7 +27,7 @@ def parse_obsidian_vault(master_note_path):
     base_dir = os.path.dirname(master_note_path)
 
     while notes_to_visit:
-        current_note_path_link = notes_to_visit.pop(0)
+        current_note_path_link = notes_to_visit.pop(0) # 0 is the index to pop
         
         # Normalize the link to a potential file path
         # This handles links with or without the .md extension
