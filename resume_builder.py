@@ -1,13 +1,12 @@
 import os
 import re
 import argparse
-import json
-import requests # For making API calls
+from google import genai
 from dotenv import load_dotenv
 
+client = genai.Client()
+
 load_dotenv()
-API_KEY = os.getenv("API_KEY")
-API_URL = os.getenv("API_URL")
 
 def parse_obsidian_vault(master_note_path):
     """
@@ -86,6 +85,7 @@ def generate_resume_suggestions(portfolio_context, job_description):
     Returns:
         str: The AI-generated suggestions, or an error message.
     """
+
     prompt = f"""
     You are an expert career coach and resume writer. Your task is to help me tailor my resume for a specific job.
 
@@ -124,28 +124,12 @@ def generate_resume_suggestions(portfolio_context, job_description):
     {job_description}
     """
 
-    headers = {"Content-Type": "application/json"}
-    payload = {
-        "contents": [{
-            "parts": [{"text": prompt}]
-        }]
-    }
-
     try:
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=120)
-        response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-        
-        result = response.json()
-        
-        if 'candidates' in result and result['candidates']:
-            candidate = result['candidates'][0]
-            if 'content' in candidate and 'parts' in candidate['content'] and candidate['content']['parts']:
-                return candidate['content']['parts'][0]['text']
-        
-        return "Error: Could not extract valid content from API response. Full response: " + json.dumps(result)
-
-    except requests.exceptions.RequestException as e:
-        return f"An error occurred with the API request: {e}"
+        response = client.models.generate_content(
+            model="gemini-2.5-pro",
+            contents=prompt
+        )
+        return response.text
     except Exception as e:
         return f"An unexpected error occurred: {e}"
 
